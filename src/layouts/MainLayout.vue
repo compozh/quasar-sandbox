@@ -1,44 +1,42 @@
-<template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          @click="leftDrawerOpen = !leftDrawerOpen"
-          icon="menu"
-          aria-label="Menu"
-        />
+<template lang="pug">
+  q-layout(view="lHh Lpr lFf")
+    q-header(elevated)
+      q-toolbar
+        q-btn(flat dense round
+              @click="leftDrawerOpen = !leftDrawerOpen"
+              icon="menu" aria-label="Menu")
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        q-toolbar-title Quasar App
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
-    </q-header>
+        q-select(v-model="lang"
+                 :options="langOptions"
+                 label="Quasar Language"
+                 dense
+                 borderless
+                 emit-value
+                 map-options
+                 options-dense
+                 style="min-width: 150px")
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-    >
-      <q-list>
-        <q-item-label header class="text-grey-8">Essential Links</q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
+        div Quasar v {{ $q.version }}
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+    q-drawer(v-model="leftDrawerOpen"
+             show-if-above bordered
+             content-class="bg-grey-1")
+      q-list
+        q-item-label(header).text-grey-8 Essential Links
+        essential-link(v-for="link in essentialLinks"
+                      :key="link.title"
+                      v-bind="link")
+    q-page-container
+
+      div  {{ $q.lang.getLocale() }}
+      div  {{ $q.lang.isoName }}
+
+      div  {{ $t('success') }}
+      div  {{ $t('failed') }}
+
+      router-view
 </template>
 
 <script>
@@ -46,13 +44,17 @@ import EssentialLink from 'components/EssentialLink'
 
 export default {
   name: 'MainLayout',
-
   components: {
     EssentialLink
   },
-
   data () {
     return {
+      lang: this.$i18n.locale,
+      langOptions: [
+        { value: 'en-us', label: 'English' },
+        { value: 'ru-ru', label: 'Русский' },
+        { value: 'uk-ua', label: 'Український' }
+      ],
       leftDrawerOpen: false,
       essentialLinks: [
         {
@@ -92,6 +94,11 @@ export default {
           link: 'https://facebook.quasar.dev'
         }
       ]
+    }
+  },
+  watch: {
+    lang (lang) {
+      this.$i18n.locale = lang
     }
   }
 }
