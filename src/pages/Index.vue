@@ -4,6 +4,8 @@
 
       q-form(@submit="onSubmit"
              @reset="onReset").q-gutter-md
+        div {{ date }}
+        q-date(v-model="date")
 
         q-input(filled v-model="name"
                 label="Your name *"
@@ -27,14 +29,12 @@
 
 <script>
 export default {
-  data () {
-    return {
-      name: null,
-      age: null,
-
-      accept: false
-    }
-  },
+  data: () => ({
+    name: null,
+    age: null,
+    date: '2019/02/01',
+    accept: false
+  }),
   methods: {
     onSubmit () {
       if (this.accept !== true) {
