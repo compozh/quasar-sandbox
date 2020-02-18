@@ -1,9 +1,5 @@
-import enUS from './en-us'
-import ruRU from './ru-ru'
-import ukUA from './uk-ua'
+import en from './en'
+import ru from './ru'
+import uk from './uk'
 
-export default {
-  'en-us': enUS,
-  'ru-ru': ruRU,
-  'uk-ua': ukUA
-}
+export default { 'en-us': en, ru, uk }
