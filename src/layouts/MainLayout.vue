@@ -10,7 +10,7 @@
 
         q-select(v-model="lang"
                  :options="langOptions"
-                 label="Quasar Language"
+                 :label="$t('language')"
                  dense
                  borderless
                  emit-value
@@ -30,76 +30,65 @@
                       v-bind="link")
     q-page-container
 
-      div  {{ $q.lang.getLocale() }}
-      div  {{ $q.lang.isoName }}
+      p Users locale (based on browser settings): {{ $q.lang.getLocale() }}
+      p Quasars internal locale: {{ $q.lang.isoName }}
 
-      div  {{ $t('success') }}
-      div  {{ $t('failed') }}
+      p test phrase: {{ $t('success') }}
+      p test phrase: {{ $t('failed') }}
 
       router-view
 </template>
 
 <script>
+import languages from 'quasar/lang/index.json'
 import EssentialLink from 'components/EssentialLink'
+import { format } from 'quasar'
+
+const appLanguages = languages.filter(lang =>
+  [ 'ru', 'uk', 'en-us' ].includes(lang.isoName))
 
 export default {
   name: 'MainLayout',
   components: {
     EssentialLink
   },
-  data () {
-    return {
-      lang: this.$i18n.locale,
-      langOptions: [
-        { value: 'en-us', label: 'English' },
-        { value: 'ru-ru', label: 'Русский' },
-        { value: 'uk-ua', label: 'Український' }
-      ],
-      leftDrawerOpen: false,
-      essentialLinks: [
-        {
-          title: 'Docs',
-          caption: 'quasar.dev',
-          icon: 'school',
-          link: 'https://quasar.dev'
-        },
-        {
-          title: 'Github',
-          caption: 'github.com/quasarframework',
-          icon: 'code',
-          link: 'https://github.com/quasarframework'
-        },
-        {
-          title: 'Discord Chat Channel',
-          caption: 'chat.quasar.dev',
-          icon: 'chat',
-          link: 'https://chat.quasar.dev'
-        },
-        {
-          title: 'Forum',
-          caption: 'forum.quasar.dev',
-          icon: 'record_voice_over',
-          link: 'https://forum.quasar.dev'
-        },
-        {
-          title: 'Twitter',
-          caption: '@quasarframework',
-          icon: 'rss_feed',
-          link: 'https://twitter.quasar.dev'
-        },
-        {
-          title: 'Facebook',
-          caption: '@QuasarFramework',
-          icon: 'public',
-          link: 'https://facebook.quasar.dev'
-        }
-      ]
+  data: () => ({
+    langOptions: [],
+    leftDrawerOpen: false,
+    essentialLinks: [
+      {
+        title: 'Docs',
+        caption: 'quasar.dev',
+        icon: 'school',
+        link: 'https://quasar.dev'
+      }
+    ]
+  }),
+  computed: {
+    lang: {
+      get () {
+        return this.$i18n.locale
+      },
+      set (lang) {
+        this.$i18n.locale = lang
+      }
     }
   },
   watch: {
     lang (lang) {
-      this.$i18n.locale = lang
+      import(/* webpackInclude: /(ru|uk|en-us)\.js$/ */
+      'quasar/lang/' + lang)
+        .then(lang => this.$q.lang.set(lang.default))
     }
+  },
+  created () {
+    const { capitalize } = format
+    const label = name => name.slice(0, 2).toUpperCase()
+    this.langOptions = appLanguages.map(lang => ({
+      label: capitalize(lang.nativeName),
+      icon: label(lang.isoName),
+      value: lang.isoName
+    }))
   }
 }
 </script>
