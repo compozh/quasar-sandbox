@@ -8,6 +8,7 @@
   "author": "Igor Pevchev <pevchev@it-enterprise.com>",
   "private": true,
   "scripts": {
+    "dev": "quasar dev",
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
   },
