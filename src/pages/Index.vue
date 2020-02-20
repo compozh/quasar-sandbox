@@ -5,7 +5,14 @@
       q-form(@submit="onSubmit"
              @reset="onReset").q-gutter-md
         div {{ date }}
-        q-date(v-model="date")
+
+        q-input(filled v-model="date" :mask="$t('dateInputMask')" :rules="[dateRules]")
+          template(v-slot:append)
+            q-icon(name="event" class="cursor-pointer")
+              q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
+                q-date(v-model="date"
+                       :mask="$t('dateOutputMask')"
+                       @input="() => $refs.qDateProxy.hide()")
 
         q-input(filled v-model="name"
                 label="Your name *"
@@ -28,14 +35,41 @@
 </template>
 
 <script>
+import { date } from 'quasar'
+
 export default {
   data: () => ({
     name: null,
     age: null,
-    date: '2019/02/01',
+    currentDate: new Date(),
+    events: [ '2020/02/20', '2020/02/01' ],
+    options: [ '2020/02/18', '2020/02/20', '2020/02/01', '2020/02/28' ],
     accept: false
   }),
+  computed: {
+    date: {
+      get () {
+        return date.formatDate(this.currentDate, this.$t('dateOutputMask'))
+      },
+      set (newDate) {
+        this.currentDate = date.extractDate(newDate, this.$t('dateOutputMask'))
+      }
+    },
+    dateRules () {
+      return val => this.$t('dateInputMask').test(val) || this.$t('dateInvalidMessage')
+    }
+  },
   methods: {
+    eventsFn (date) {
+      if (date === '08.02.2020' ||
+        date === '18.02.2020' ||
+        date === '28.02.2020' ||
+        date === '04.02.2020' ||
+        date === '22.02.2020') {
+        return true
+      }
+      return false
+    },
     onSubmit () {
       if (this.accept !== true) {
         this.$q.notify({
