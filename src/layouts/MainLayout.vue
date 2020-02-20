@@ -29,13 +29,6 @@
                       :key="link.title"
                       v-bind="link")
     q-page-container
-
-      p Users locale (based on browser settings): {{ $q.lang.getLocale() }}
-      p Quasars internal locale: {{ $q.lang.isoName }}
-
-      p test phrase: {{ $t('success') }}
-      p test phrase: {{ $t('failed') }}
-
       router-view
 </template>
 
