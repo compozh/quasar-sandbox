@@ -6,11 +6,12 @@
              @reset="onReset").q-gutter-md
         div {{ date }}
 
-        q-input(filled v-model="date" :mask="$t('dateInputMask')" :rules="[dateRules]")
+        q-input(filled v-model="date" :mask="$t('dateInputMask')" :rules="dateRules" dense)
           template(v-slot:append)
             q-icon(name="event" class="cursor-pointer")
               q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
                 q-date(v-model="date"
+
                        :mask="$t('dateOutputMask')"
                        @input="() => $refs.qDateProxy.hide()")
 
@@ -42,6 +43,7 @@ export default {
     name: null,
     age: null,
     currentDate: new Date(),
+    stringDate: '',
     events: [ '2020/02/20', '2020/02/01' ],
     options: [ '2020/02/18', '2020/02/20', '2020/02/01', '2020/02/28' ],
     accept: false
@@ -52,11 +54,39 @@ export default {
         return date.formatDate(this.currentDate, this.$t('dateOutputMask'))
       },
       set (newDate) {
+        this.stringDate = newDate
         this.currentDate = date.extractDate(newDate, this.$t('dateOutputMask'))
       }
     },
+    parseDate () {
+      return date => {
+        let day = '', month = '', year = ''
+        const mask = this.$t('dateOutputMask')
+        mask.split('').forEach((char, index) => {
+          switch (char) {
+            case 'D': day += date[index]
+              break
+            case 'M': month += date[index]
+              break
+            case 'Y': year += date[index]
+              break
+          }
+        })
+        return { day, month, year }
+      }
+    },
     dateRules () {
-      return val => this.$t('dateInputMask').test(val) || this.$t('dateInvalidMessage')
+      const parsedDate = this.parseDate(this.stringDate)
+      let { day, month, year } = parsedDate
+      console.log('parsedDate', parsedDate)
+      const maxYear = new Date().getFullYear() + 1
+      const minYear = new Date().getFullYear() - 1
+      const daysInMonth = new Date(year, month, 0).getDate()
+      return [
+        val => (year <= maxYear && year > minYear) || 'Invalid year',
+        val => (month <= 12 && month > 0) || 'Invalid month',
+        val => (day <= daysInMonth && daysInMonth > 0) || 'Invalid day'
+      ]
     }
   },
   methods: {
