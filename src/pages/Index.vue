@@ -10,9 +10,9 @@
           template(v-slot:append)
             q-icon(name="event" class="cursor-pointer")
               q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
-                q-date(v-model="date"
-
+                q-date(v-model="date" minimal
                        :mask="$t('dateOutputMask')"
+                       :options="dateOptions"
                        @input="() => $refs.qDateProxy.hide()")
 
         q-input(filled v-model="name"
@@ -43,9 +43,7 @@ export default {
     name: null,
     age: null,
     currentDate: new Date(),
-    stringDate: '',
-    events: [ '2020/02/20', '2020/02/01' ],
-    options: [ '2020/02/18', '2020/02/20', '2020/02/01', '2020/02/28' ],
+    stringDate: date.formatDate(new Date()),
     accept: false
   }),
   computed: {
@@ -83,23 +81,19 @@ export default {
       const minYear = new Date().getFullYear() - 1
       const daysInMonth = new Date(year, month, 0).getDate()
       return [
-        val => (year <= maxYear && year > minYear) || 'Invalid year',
-        val => (month <= 12 && month > 0) || 'Invalid month',
-        val => (day <= daysInMonth && daysInMonth > 0) || 'Invalid day'
+        val => (year <= maxYear && year > minYear) || this.$t('dateInvalidYear'),
+        val => (month <= 12 && month > 0) || this.$t('dateInvalidMonth'),
+        val => (day <= daysInMonth && daysInMonth > 0) || this.$t('dateInvalidDay')
       ]
+    },
+    dateOptions () {
+      const startDate = date.subtractFromDate(new Date(), { year: 1 })
+      const endDate = date.addToDate(new Date(), { year: 1 })
+      const dateF = unformedDate => date.formatDate(unformedDate, 'YYYY/MM/DD')
+      return date => date >= dateF(startDate) && date <= dateF(endDate)
     }
   },
   methods: {
-    eventsFn (date) {
-      if (date === '08.02.2020' ||
-        date === '18.02.2020' ||
-        date === '28.02.2020' ||
-        date === '04.02.2020' ||
-        date === '22.02.2020') {
-        return true
-      }
-      return false
-    },
     onSubmit () {
       if (this.accept !== true) {
         this.$q.notify({

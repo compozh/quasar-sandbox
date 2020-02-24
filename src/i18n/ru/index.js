@@ -1,9 +1,8 @@
 export default {
-  dateOutputMask: 'DD.MM.YYYY',
-  dateInputMask: '##.##.####',
-  dateValidateMask: '/d{2}\\.\\d{2}\\.\\d{4}/',
-  dateInvalidMessage: 'Не корректная дата',
   language: 'Язык',
-  failed: 'Не удача',
-  success: 'Успех'
+  dateInputMask: '##.##.####',
+  dateOutputMask: 'DD.MM.YYYY',
+  dateInvalidYear: 'Не верно указан год',
+  dateInvalidMonth: 'Не верно указан месяц',
+  dateInvalidDay: 'Не верно указан день'
 }
